@@ -13,6 +13,7 @@ export default function PostPage() {
 
   const [post, setPost] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [accessDenied, setAccessDenied] = useState(false)
 
   useEffect(() => {
     if (postId) {
@@ -39,8 +40,13 @@ export default function PostPage() {
 
     if (error) {
       console.error("Error fetching post:", error)
+      // If error indicates access denied, set accessDenied to true
+      if (error.code === "PGRST116" || error.message?.toLowerCase().includes("access denied")) {
+        setAccessDenied(true)
+      }
     } else {
       setPost(data)
+      setAccessDenied(false)
     }
 
     setLoading(false)

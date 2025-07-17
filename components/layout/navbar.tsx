@@ -160,18 +160,7 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="w-64">
               <div className="flex flex-col space-y-4 mt-8">
-                <div className="flex items-center space-x-3 pb-4 border-b">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} alt={profile?.username} />
-                    <AvatarFallback>{profile?.username?.charAt(0).toUpperCase() || "U"}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold">{profile?.full_name || profile?.username}</p>
-                    <p className="text-sm text-muted-foreground">@{profile?.username}</p>
-                  </div>
-                </div>
-
-                <div className="flex justify-center pb-2">
+                <div className="flex justify-center pb-4">
                   <NotificationBell />
                 </div>
 
@@ -179,49 +168,69 @@ export function Navbar() {
                   <Button
                     key={item.href}
                     variant="ghost"
-                    className="justify-start"
+                    className="justify-start flex items-center space-x-3"
                     asChild
                     onClick={() => setIsOpen(false)}
                   >
-                    <Link href={item.href}>
-                      <item.icon className="mr-2 h-5 w-5" />
-                      {item.label}
+                    <Link href={item.href} className="flex items-center space-x-3">
+                      <item.icon className="h-5 w-5" />
+                      <span>{item.label}</span>
                     </Link>
                   </Button>
                 ))}
 
                 {profile && (
                   <>
-                  <Button variant="ghost" className="justify-start" asChild onClick={() => setIsOpen(false)}>
-                    <Link href={profileUrl} legacyBehavior passHref>
-                      <a>
-                        <User className="mr-2 h-5 w-5" />
-                        Profile
-                      </a>
-                    </Link>
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start flex items-center space-x-3 border-b pb-4"
+                      asChild
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Link href={profileUrl} legacyBehavior passHref>
+                        <a className="flex items-center space-x-3">
+                          <User className="h-5 w-5" />
+                          <span>Profile</span>
+                        </a>
+                      </Link>
+                    </Button>
 
-                    <Button variant="ghost" className="justify-start" asChild onClick={() => setIsOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      className="justify-start flex items-center space-x-3 border-b pb-4"
+                      asChild
+                      onClick={() => setIsOpen(false)}
+                    >
                       <Link href="/settings" legacyBehavior passHref>
-                        <a>
-                          <Settings className="mr-2 h-5 w-5" />
-                          Settings
+                        <a className="flex items-center space-x-3">
+                          <Settings className="h-5 w-5" />
+                          <span>Settings</span>
                         </a>
                       </Link>
                     </Button>
 
-                    <Button variant="ghost" className="justify-start" asChild onClick={() => setIsOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      className="justify-start flex items-center space-x-3 border-b pb-4"
+                      asChild
+                      onClick={() => setIsOpen(false)}
+                    >
                       <Link href="/about-us" legacyBehavior passHref>
-                        <a>
-                          <Info className="mr-2 h-5 w-5" />
-                          About Us
+                        <a className="flex items-center space-x-3">
+                          <Info className="h-5 w-5" />
+                          <span>About Us</span>
                         </a>
                       </Link>
                     </Button>
 
-                    <Button variant="ghost" className="justify-start" onClick={handleSignOut} disabled={signingOut}>
-                      <LogOut className="mr-2 h-5 w-5" />
-                      {signingOut ? "Signing out..." : "Sign out"}
+                    <Button
+                      variant="ghost"
+                      className="justify-start flex items-center space-x-3"
+                      onClick={handleSignOut}
+                      disabled={signingOut}
+                    >
+                      <LogOut className="h-5 w-5" />
+                      <span>{signingOut ? "Signing out..." : "Sign out"}</span>
                     </Button>
                   </>
                 )}

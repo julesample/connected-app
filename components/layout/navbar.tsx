@@ -99,8 +99,10 @@ export function Navbar() {
         <div className="hidden md:flex items-center space-x-4">
           {navItems.map((item) => (
             <Button key={item.href} variant="ghost" size="icon" asChild>
-              <Link href={item.href}>
-                <item.icon className="h-5 w-5" />
+              <Link href={item.href} legacyBehavior passHref>
+                <a>
+                  <item.icon className="h-5 w-5" />
+                </a>
               </Link>
             </Button>
           ))}
@@ -190,24 +192,30 @@ export function Navbar() {
 
                 {profile && (
                   <>
-                    <Button variant="ghost" className="justify-start" asChild onClick={() => setIsOpen(false)}>
-                      <Link href={profileUrl}>
+                  <Button variant="ghost" className="justify-start" asChild onClick={() => setIsOpen(false)}>
+                    <Link href={profileUrl} legacyBehavior passHref>
+                      <a>
                         <User className="mr-2 h-5 w-5" />
                         Profile
+                      </a>
+                    </Link>
+                  </Button>
+
+                    <Button variant="ghost" className="justify-start" asChild onClick={() => setIsOpen(false)}>
+                      <Link href="/settings" legacyBehavior passHref>
+                        <a>
+                          <Settings className="mr-2 h-5 w-5" />
+                          Settings
+                        </a>
                       </Link>
                     </Button>
 
                     <Button variant="ghost" className="justify-start" asChild onClick={() => setIsOpen(false)}>
-                      <Link href="/settings">
-                        <Settings className="mr-2 h-5 w-5" />
-                        Settings
-                      </Link>
-                    </Button>
-
-                    <Button variant="ghost" className="justify-start" asChild onClick={() => setIsOpen(false)}>
-                      <Link href="/about-us">
-                        <Info className="mr-2 h-5 w-5" />
-                        About Us
+                      <Link href="/about-us" legacyBehavior passHref>
+                        <a>
+                          <Info className="mr-2 h-5 w-5" />
+                          About Us
+                        </a>
                       </Link>
                     </Button>
 

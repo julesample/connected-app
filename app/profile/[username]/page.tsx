@@ -49,47 +49,7 @@ export default function ProfilePage() {
       return
     }
 
-    // Check if the profile is private
-    if (profileData.is_private) {
-      // If private, check if the current user is a follower
-      // Also allow the profile owner to see their own profile
-      if (user?.id === profileData.id) {
-        setProfile(profileData)
-        setLoading(false)
-        return
-      }
-
-      const { data: followData, error: followError } = await supabase
-        .from("follows")
-        .select("*")
-        .eq("following_id", profileData.id) // The profile owner's ID
-        .eq("follower_id", user?.id) // The current logged-in user's ID
-      .maybeSingle()
-
-    if (followError) {
-      handleClientError("Error checking follow status:", followError)
-      // Decide how to handle this error - perhaps show limited profile
-      setProfile(null) // Or a limited view
-      setLoading(false)
-      return
-    }
-
-      // If not a follower, show limited profile data
-      if (!followData) {
-        setProfile({
-          username: profileData.username,
-          bio: "This account is private.",
-          avatar_url: profileData.avatar_url, // Optionally show avatar
-          // Only include minimal public information
-        })
-      } else {
-        // If a follower, show full profile
-        setProfile(profileData)
-      }
-    } else {
-      // If not private, show full profile
-      setProfile(profileData)
-    }
+    setProfile(profileData)
 
     setLoading(false)
   }

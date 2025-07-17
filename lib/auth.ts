@@ -124,6 +124,9 @@ export async function deleteAccount(password: string) {
       throw deleteError
     }
 
+    // Removed call to backend API route to delete Supabase Auth user because API route was deleted
+    // Without this, Supabase Auth user is not deleted and user can still log in
+
     // Sign out after deletion
     await signOut()
 

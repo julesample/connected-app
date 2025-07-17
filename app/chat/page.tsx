@@ -629,8 +629,22 @@ export default function ChatPage() {
                   )}
 
                   {loading ? (
-                    <div className="flex justify-center py-8">
-                      <Loader2 className="h-8 w-8 animate-spin" />
+                    // Skeleton loader for conversations list
+                    <div className="space-y-2 p-4">
+                      {[...Array(5)].map((_, i) => (
+                        <div key={i} className="flex items-center space-x-3 p-4 rounded-md bg-muted animate-pulse">
+                          <div className="rounded-full bg-muted h-10 w-10" />
+                          <div className="flex-1 min-w-0 space-y-2 py-1">
+                            <div className="h-4 bg-muted rounded w-3/4" />
+                            <div className="h-3 bg-muted rounded w-1/2" />
+                            <div className="h-2 bg-muted rounded w-1/4" />
+                          </div>
+                          <div className="flex flex-col items-end space-y-1">
+                            <div className="h-4 bg-muted rounded w-6" />
+                            <div className="h-4 bg-muted rounded w-10" />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   ) : conversations.length > 0 ? (
                     <div className="space-y-1">
@@ -784,8 +798,22 @@ export default function ChatPage() {
                   <CardContent className="p-0 flex flex-col h-[400px]">
                     <ScrollArea className="flex-1 p-4">
                       {messagesLoading ? (
-                        <div className="flex justify-center py-8">
-                          <Loader2 className="h-8 w-8 animate-spin" />
+                        // Skeleton loader for messages
+                        <div className="space-y-4 p-4">
+                          {[...Array(5)].map((_, i) => (
+                            <div
+                              key={i}
+                              className={`flex group ${i % 2 === 0 ? "justify-end" : "justify-start"}`}
+                            >
+                              <div
+                                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg relative bg-muted animate-pulse`}
+                                style={{ minHeight: "3rem" }}
+                              >
+                                <div className="h-4 bg-muted rounded w-48 mb-2" />
+                                <div className="h-3 bg-muted rounded w-32" />
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       ) : messages.length > 0 ? (
                         <div className="space-y-4">
@@ -808,34 +836,7 @@ export default function ChatPage() {
                                     <p className="text-xs opacity-70">Read</p>
                                   )}
                                 </div>
-                                {message.sender_id === user?.id && (
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="absolute -top-2 -right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
-                                      >
-                                        <MoreHorizontal className="h-3 w-3" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem
-                                        onClick={() =>
-                                          setDeleteMessageDialog({
-                                            open: true,
-                                            messageId: message.id,
-                                            senderId: message.sender_id,
-                                          })
-                                        }
-                                        className="text-destructive"
-                                      >
-                                        <Trash2 className="h-4 w-4 mr-2" />
-                                        Delete Message
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                )}
+                               
                               </div>
                             </div>
                           ))}

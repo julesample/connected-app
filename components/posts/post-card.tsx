@@ -47,11 +47,12 @@ interface PostCardProps {
       username: string
       full_name: string | null
       avatar_url: string | null
-      is_private?: boolean
-    } | null
+    } 
   }
   onDelete?: () => void
 }
+
+import { EditPostDialog } from "./edit-post-dialog"
 
 export const PostCard: React.FC<PostCardProps> = ({ post, onDelete }) => {
   const { user } = useAuth()
@@ -74,6 +75,14 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onDelete }) => {
     commentId: "",
     commentUserId: "",
   })
+
+  const [editPostDialog, setEditPostDialog] = useState(false)
+
+  const handlePostUpdate = () => {
+    // Refresh post data or trigger parent update if needed
+    // For simplicity, reload the page or refetch post data here
+    window.location.reload()
+  }
 
   useEffect(() => {
     if (showComments) {
@@ -282,30 +291,38 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onDelete }) => {
   }
 
   const getPrivacyIcon = () => {
-    // Override individual post privacy if profile is private
-    if (post.profiles?.is_private) {
-      return <Lock className="h-3 w-3 text-red-500" />
+
+
+    // Prioritize post.privacy over profile privacy
+    if (post.privacy) {
+      switch (post.privacy) {
+        case "private":
+          return <Lock className="h-3 w-3 text-red-500" />
+        case "followers":
+          return <Users className="h-3 w-3 text-yellow-500" />
+        case "only_me":
+          return <Lock className="h-3 w-3 text-blue-500" />
+        case "public":
+          return <Globe className="h-3 w-3 text-green-500" />
+        default:
+          return <Globe className="h-3 w-3 text-green-500" />
+      }
     }
-    switch (post.privacy) {
-      case "private":
-        return <Lock className="h-3 w-3 text-red-500" />
-      case "followers":
-        return <Users className="h-3 w-3 text-yellow-500" />
-      default:
-        return <Globe className="h-3 w-3 text-green-500" />
-    }
+
+    // Fallback to profile privacy
+ 
   }
 
   const getPrivacyText = () => {
     // Override individual post privacy if profile is private
-    if (post.profiles?.is_private) {
-      return "Private"
-    }
+
     switch (post.privacy) {
       case "private":
         return "Private"
       case "followers":
         return "Followers only"
+      case "only_me":
+        return "Only Me"
       default:
         return "Public"
     }
@@ -341,17 +358,21 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onDelete }) => {
             </span>
             {user?.id === post.profiles?.id && (
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setDeletePostDialog(true)} className="text-destructive">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Post
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setEditPostDialog(true)}>
+              <MoreHorizontal className="h-4 w-4 mr-2" />
+              Edit Post
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDeletePostDialog(true)} className="text-destructive">
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Post
+            </DropdownMenuItem>
+          </DropdownMenuContent>
               </DropdownMenu>
             )}
           </div>
@@ -430,9 +451,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onDelete }) => {
                       <div className="flex-1 bg-muted rounded-lg p-3">
                         <div className="flex items-center justify-between mb-1">
                           <div className="flex items-center space-x-2">
-                            <span className="font-semibold text-sm">
+                            <Link href={`/profile/${comment.profiles.username}`} className="font-semibold text-sm hover:underline">
                               {comment.profiles.full_name || comment.profiles.username}
-                            </span>
+                            </Link>
                             <span className="text-xs text-muted-foreground">
                               {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                             </span>
@@ -464,6 +485,16 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onDelete }) => {
           </Collapsible>
         </CardFooter>
       </Card>
+
+      {/* Edit Post Dialog */}
+      {editPostDialog && (
+        <EditPostDialog
+          post={post}
+          isOpen={editPostDialog}
+          onClose={() => setEditPostDialog(false)}
+          onSave={handlePostUpdate}
+        />
+      )}
 
       {/* Delete Post Confirmation Dialog */}
       <ConfirmationDialog

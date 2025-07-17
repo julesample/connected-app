@@ -49,7 +49,7 @@ export function PostFeed({ feedType = "home", userId }: PostFeedProps) {
     let query = supabase
       .from("posts")
       .select(`
-        id, user_id, content, image_url, likes_count, comments_count, created_at,
+        id, user_id, content, image_url, likes_count, comments_count, created_at, privacy,
         allowed_users,
         profiles (
           id,
@@ -119,9 +119,23 @@ export function PostFeed({ feedType = "home", userId }: PostFeedProps) {
   }
 
   if (loading) {
+    // Render 4 skeleton post cards as placeholders
     return (
-      <div className="flex justify-center py-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="space-y-6">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="w-full mx-auto border-0 border-b rounded-none md:border md:rounded-lg md:max-w-2xl p-4">
+            <div className="flex items-center space-x-4 mb-4">
+              <div className="rounded-full bg-muted h-10 w-10 animate-pulse" />
+              <div className="flex-1 space-y-2 py-1">
+                <div className="h-4 bg-muted rounded w-1/4 animate-pulse" />
+                <div className="h-3 bg-muted rounded w-1/6 animate-pulse" />
+              </div>
+            </div>
+            <div className="h-4 bg-muted rounded mb-2 animate-pulse" />
+            <div className="h-4 bg-muted rounded mb-2 animate-pulse w-5/6" />
+            <div className="h-48 bg-muted rounded animate-pulse" />
+          </div>
+        ))}
       </div>
     )
   }

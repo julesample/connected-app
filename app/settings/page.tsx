@@ -45,7 +45,7 @@ export default function SettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState("")
 
   // Privacy state
-  const [isPrivate, setIsPrivate] = useState(false)
+  // Removed isPrivate state and related handlers for Private Account feature
 
   // Account deletion state
   const [deletePassword, setDeletePassword] = useState("")
@@ -71,7 +71,7 @@ export default function SettingsPage() {
         setBio(data.bio || "")
         setWebsite(data.website || "")
         setAvatarPreview(data.avatar_url || "")
-        setIsPrivate(data.is_private || false)
+        // Removed setIsPrivate call as isPrivate state is removed
       }
     } catch (error) {
       console.error("Profile fetch error:", error)
@@ -286,35 +286,7 @@ export default function SettingsPage() {
   }
 
   const handlePrivacyChange = async (checked: boolean) => {
-    if (!user) return
-
-    setIsPrivate(checked)
-    setSaving(true)
-
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ is_private: checked })
-        .eq("id", user.id)
-
-      if (error) throw error
-
-      toast({
-        title: "Success",
-        description: `Your account is now ${checked ? "private" : "public"}.`,
-      })
-    } catch (error: any) {
-      console.error("Privacy update error:", error)
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update privacy settings",
-        variant: "destructive",
-      })
-      // Revert UI on error
-      setIsPrivate(!checked)
-    } finally {
-      setSaving(false)
-    }
+    // Removed handler for Private Account toggle
   }
 
   if (loading) {
@@ -511,31 +483,7 @@ export default function SettingsPage() {
               </TabsContent>
 
               <TabsContent value="privacy" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Account Privacy</CardTitle>
-                    <CardDescription>Manage your account's privacy settings.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="space-y-1">
-                        <Label htmlFor="private-account" className="flex items-center">
-                          <Lock className="h-4 w-4 mr-2" />
-                          Private Account
-                        </Label>
-                        <p className="text-sm text-muted-foreground">
-                          If your account is private, only people you approve can see your photos and videos on Connected. Your existing followers won't be affected.
-                        </p>
-                      </div>
-                      <Switch
-                        id="private-account"
-                        checked={isPrivate}
-                        onCheckedChange={handlePrivacyChange}
-                        disabled={saving}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
+                {/* Removed Private Account privacy settings */}
                 <BlockedUsersSection />
               </TabsContent>
 

@@ -34,8 +34,6 @@ export function CreatePost() {
   const [privacy, setPrivacy] = useState("public")
   const [imageOptimizing, setImageOptimizing] = useState(false)
   const [contentWarning, setContentWarning] = useState<string | null>(null)
-  const [isAudienceDialogOpen, setIsAudienceDialogOpen] = useState(false)
-  const [selectedAudience, setSelectedAudience] = useState<string[]>([])
 
   useEffect(() => {
     if (user) {
@@ -226,10 +224,6 @@ export function CreatePost() {
         privacy: privacy,
       };
 
-      if (privacy === "private" && selectedAudience.length > 0) {
-        postData.allowed_users = selectedAudience;
-      }
-
       const { error } = await supabase.from("posts").insert(postData);
 
       if (error) throw error
@@ -245,7 +239,6 @@ export function CreatePost() {
       setImagePreview(null)
       setPrivacy("public")
       setContentWarning(null)
-      setSelectedAudience([])
 
       // Navigate to home
       router.push("/")
@@ -357,9 +350,6 @@ export function CreatePost() {
                 value={privacy}
                 onValueChange={(value) => {
                   setPrivacy(value)
-                  if (value === "private") {
-                    setIsAudienceDialogOpen(true)
-                  }
                 }}
                 disabled={loading}
               >
@@ -379,10 +369,10 @@ export function CreatePost() {
                       <span>Followers Only</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="private">
+                  <SelectItem value="only_me">
                     <div className="flex items-center space-x-2">
-                      <Lock className="h-4 w-4" />
-                      <span>Private (Select Audience)</span>
+                      <Lock className="h-4 w-4 text-blue-500" />
+                      <span>Only Me</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -395,8 +385,7 @@ export function CreatePost() {
                 !content.trim() ||
                 loading ||
                 imageOptimizing ||
-                !!contentWarning ||
-                (privacy === "private" && selectedAudience.length === 0)
+                !!contentWarning
               }
               size="sm"
               className="px-6"
@@ -407,16 +396,7 @@ export function CreatePost() {
           </div>
         </CardContent>
       </form>
-      <AudienceSelectDialog
-        isOpen={isAudienceDialogOpen}
-        onClose={() => setIsAudienceDialogOpen(false)}
-        onSelect={(audience) => {
-          setSelectedAudience(audience)
-          if (audience.length === 0) {
-            setPrivacy("public") // Revert to public if no one is selected
-          }
-        }}
-      />
+      
     </Card>
   )
 }

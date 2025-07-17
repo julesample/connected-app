@@ -28,7 +28,7 @@ Install dependencies
 ```
 ## Features
 
-- Realtime messenging
+- Realtime messaging
 - Posts Content
 - Like and comment posts
 - Blocking and poking users

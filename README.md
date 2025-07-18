@@ -12,7 +12,7 @@ This contains everything you need to run your app locally.
 Clone the project
 
 ```bash
-  git clone https://github.com/julesample/connected.git
+  git clone https://github.com/julesample/connected-app.git
 ```
 
 Go to the project directory
@@ -28,7 +28,7 @@ Install dependencies
 ```
 ## Features
 
-- Realtime messenging
+- Realtime messaging
 - Posts Content
 - Like and comment posts
 - Blocking and poking users

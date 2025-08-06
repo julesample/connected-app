@@ -334,15 +334,15 @@ export function AuthForm() {
             </DialogHeader>
             <DialogDescription>
               <p className="text-sm mb-2">
-                Our application is a social platform designed to connect people through shared experiences.
-                Users can create and share posts, follow others to see their content, and engage in private conversations.
-                With robust privacy controls, you can customize who sees your posts and manage your account's visibility.
-                Our goal is to provide a secure and personalized environment for you to interact with others and build meaningful connections.
-                Work in progress - we are constantly improving the platform to enhance user experience and add new features.
-                Please feel free to reach out with any feedback or suggestions.
+              Our application is a social platform designed to connect people through shared experiences. 
+        Users can create and share posts, follow others to see their content, and engage in private conversations. 
+        With robust privacy controls, you can customize who sees your posts. 
+        Our goal is to provide a secure and personalized environment for you to interact with others and build meaningful connections.
+        Work in progress - we are constantly improving the platform to enhance user experience and add new features.
+        Please feel free to reach out with any feedback or suggestions.
               </p>
               <p className="text-sm">
-                Owned and maintained by <a href="https://julesample.vercel.app/" className="text-blue-600 underline">Julesample</a>
+                Owned and maintained by <a href="https://julesample.vercel.app" className="text-blue-600 underline">Julesample</a>
               </p>
             </DialogDescription>
             <DialogClose asChild>

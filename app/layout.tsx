@@ -3,7 +3,7 @@ import ClientLayout from "./clientLayout"
 import './globals.css'
 
 export const metadata = {
-  generator: 'v0.dev'
+  title: 'Connected'
 }
 
 export default function RootLayout({

@@ -14,7 +14,7 @@ export default function AboutUs() {
       <p className="text-lg">
         Our application is a social platform designed to connect people through shared experiences. 
         Users can create and share posts, follow others to see their content, and engage in private conversations. 
-        With robust privacy controls, you can customize who sees your posts and manage your account's visibility. 
+        With robust privacy controls, you can customize who sees your posts. 
         Our goal is to provide a secure and personalized environment for you to interact with others and build meaningful connections.
         Work in progress - we are constantly improving the platform to enhance user experience and add new features.
         Please feel free to reach out with any feedback or suggestions.

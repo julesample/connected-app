@@ -19,7 +19,7 @@ export default function AboutUs() {
         Work in progress - we are constantly improving the platform to enhance user experience and add new features.
         Please feel free to reach out with any feedback or suggestions.
       </p>
-      <p>Owned and maintained by</p><a href="https://github.com/julesample">Julesample</a>
+      <p>Owned and maintained by</p><a href="https://julesample.vercel.app/">Julesample</a>
     </div>
   );
 }

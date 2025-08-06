@@ -342,7 +342,7 @@ export function AuthForm() {
                 Please feel free to reach out with any feedback or suggestions.
               </p>
               <p className="text-sm">
-                Owned and maintained by <a href="https://github.com/julesample" className="text-blue-600 underline">Julesample</a>
+                Owned and maintained by <a href="https://julesample.vercel.app/" className="text-blue-600 underline">Julesample</a>
               </p>
             </DialogDescription>
             <DialogClose asChild>

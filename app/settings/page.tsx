@@ -83,10 +83,23 @@ export default function SettingsPage() {
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
+      // Enhanced file validation
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+      const maxSize = 5 * 1024 * 1024 // Increased to 5MB
+      
+      if (!validTypes.includes(file.type)) {
         toast({
-          title: "Error",
-          description: "Avatar must be less than 2MB",
+          title: "Invalid File Type",
+          description: "Please select a JPEG, PNG, GIF, or WebP image",
+          variant: "destructive",
+        })
+        return
+      }
+      
+      if (file.size > maxSize) {
+        toast({
+          title: "File Too Large",
+          description: "Avatar must be less than 5MB",
           variant: "destructive",
         })
         return
@@ -97,29 +110,87 @@ export default function SettingsPage() {
       reader.onload = (e) => {
         setAvatarPreview(e.target?.result as string)
       }
+      reader.onerror = () => {
+        toast({
+          title: "Error",
+          description: "Failed to read image file",
+          variant: "destructive",
+        })
+      }
       reader.readAsDataURL(file)
     }
   }
 
   const uploadAvatar = async (file: File): Promise<string | null> => {
     try {
-      const fileExt = file.name.split(".").pop()
-      const fileName = `${user?.id}-avatar.${fileExt}`
+      // Create unique filename with timestamp to prevent caching issues
+      const fileExt = file.name.split('.').pop()?.toLowerCase()
+      const timestamp = Date.now()
+      const fileName = `${user?.id}-avatar-${timestamp}.${fileExt}`
       const filePath = `avatars/${fileName}`
 
-      const { error: uploadError } = await supabase.storage.from("images").upload(filePath, file, {
-        upsert: true,
-      })
+      // Add timeout for upload
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
+      const { error: uploadError } = await supabase.storage
+        .from("images")
+        .upload(filePath, file, {
+          upsert: true,
+          cacheControl: '3600',
+        })
+
+      clearTimeout(timeoutId)
 
       if (uploadError) {
         console.error("Error uploading avatar:", uploadError)
+        
+        // Provide more specific error messages
+        let errorMessage = "Failed to upload avatar"
+        if (uploadError.message?.includes('size')) {
+          errorMessage = "File is too large"
+        } else if (uploadError.message?.includes('type')) {
+          errorMessage = "Invalid file type"
+        } else if (uploadError.message?.includes('network')) {
+          errorMessage = "Network error. Please check your connection"
+        }
+        
+        toast({
+          title: "Upload Error",
+          description: errorMessage,
+          variant: "destructive",
+        })
         return null
       }
 
       const { data } = supabase.storage.from("images").getPublicUrl(filePath)
+      
+      if (!data?.publicUrl) {
+        toast({
+          title: "Error",
+          description: "Failed to get image URL",
+          variant: "destructive",
+        })
+        return null
+      }
+      
       return data.publicUrl
-    } catch (error) {
+    } catch (error: any) {
       console.error("Upload error:", error)
+      
+      if (error.name === 'AbortError') {
+        toast({
+          title: "Timeout",
+          description: "Upload timed out. Please check your connection",
+          variant: "destructive",
+        })
+      } else {
+        toast({
+          title: "Upload Error",
+          description: "An unexpected error occurred. Please try again",
+          variant: "destructive",
+        })
+      }
       return null
     }
   }
@@ -133,36 +204,90 @@ export default function SettingsPage() {
     try {
       let avatarUrl = profile?.avatar_url || ""
 
+      // Only attempt upload if there's a new file
       if (avatarFile) {
         const uploadedUrl = await uploadAvatar(avatarFile)
-        if (uploadedUrl) {
-          avatarUrl = uploadedUrl
+        if (!uploadedUrl) {
+          // uploadAvatar already shows toast errors
+          setSaving(false)
+          return
+        }
+        avatarUrl = uploadedUrl
+      }
+
+      // Ensure we have a valid URL or null
+      if (avatarUrl === "") {
+        avatarUrl = null
+      }
+
+      // Update profile with retry mechanism
+      const maxRetries = 3
+      let retryCount = 0
+      let lastError: any = null
+
+      while (retryCount < maxRetries) {
+        try {
+          const { error } = await supabase
+            .from("profiles")
+            .update({
+              full_name: fullName.trim(),
+              bio: bio.trim(),
+              website: website.trim(),
+              avatar_url: avatarUrl,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", user.id)
+
+          if (error) {
+            lastError = error
+            throw error
+          }
+
+          // Success - show toast and refresh
+          toast({
+            title: "Success",
+            description: "Profile updated successfully!",
+          })
+
+          // Reset file state
+          setAvatarFile(null)
+          
+          // Refresh profile data
+          await fetchProfile()
+          break
+
+        } catch (error: any) {
+          lastError = error
+          retryCount++
+          
+          if (retryCount >= maxRetries) {
+            throw error
+          }
+          
+          // Wait before retry with exponential backoff
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount))
         }
       }
 
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          full_name: fullName.trim(),
-          bio: bio.trim(),
-          website: website.trim(),
-          avatar_url: avatarUrl,
-        })
-        .eq("id", user.id)
-
-      if (error) throw error
-
-      toast({
-        title: "Success",
-        description: "Profile updated successfully!",
-      })
-
-      fetchProfile() // Refresh profile data
     } catch (error: any) {
       console.error("Profile update error:", error)
+      
+      let errorMessage = "Failed to update profile"
+      
+      // Handle specific error cases
+      if (error.message?.includes("network")) {
+        errorMessage = "Network error. Please check your connection and try again."
+      } else if (error.message?.includes("timeout")) {
+        errorMessage = "Request timed out. Please try again."
+      } else if (error.message?.includes("constraint")) {
+        errorMessage = "Invalid data provided. Please check your inputs."
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
       toast({
-        title: "Error",
-        description: error.message || "Failed to update profile",
+        title: "Update Error",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
